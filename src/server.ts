@@ -1,12 +1,18 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import path from "path";
+import axios from "axios";
+import { loggerService } from "./services/logger.service";
+import { router as codeBlockRoutes } from "./api/codeBlock/codeBlock.routes";
+import { createServer } from "http";
+import { config as dotenvConfig } from "dotenv";
+import { setupSocketAPI } from "./services/socket.service";
+//INIT
 const app = express();
-const axios = require("axios");
-const http = require("http").createServer(app);
-require("dotenv").config();
-
 app.use(express.json());
+const http = createServer(app);
+dotenvConfig();
+setupSocketAPI(http);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve(__dirname, "public")));
@@ -18,9 +24,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(cors(corsOptions));
 }
 
-const itemRoutes = require("./api/item/item.routes");
-
-app.use("/api/item", itemRoutes);
+app.use("/api/codeBlock", codeBlockRoutes);
 
 app.get("/api/test", async (req, res) => {
   try {
@@ -31,6 +35,7 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
+//keeping server alive in free hosting
 setInterval(async () => {
   try {
     const response = await axios.get(
@@ -43,14 +48,13 @@ setInterval(async () => {
 }, 13 * 60 * 1000);
 
 // Make every server-side-route to match the index.html
-// so when requesting http://localhost:3030/index.html/item/123 it will still respond with
+// so when requesting http://localhost:3030/index.html/codeBlock/123 it will still respond with
 // our SPA (single page app) (the index.html file) and allow vue/react-router to take it from there
 app.get("/**", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-const logger = require("./services/logger.service");
 const port = process.env.PORT || 3030;
 http.listen(port, () => {
-  logger.info("Server is running on http://localhost:" + port);
+  loggerService.info("Server is running on http://localhost:" + port);
 });

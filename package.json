@@ -1,14 +1,14 @@
 {
-  "name": "elite-code-front",
+  "name": "backend",
   "version": "1.0.0",
+  "main": "server.ts",
+  "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "startmon": "nodemon server.js",
-    "server:dev": "nodemon server.js",
-    "server:prod": "set NODE_ENV=production&&node server.js",
-    "server:prod:mac": "export NODE_ENV=production&&node server.js"
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "prod": "set NODE_ENV=production&&node server",
+    "build": "tsc -p ."
   },
-  "license": "ISC",
   "dependencies": {
     "axios": "^1.6.7",
     "bcrypt": "^5.0.0",
@@ -16,7 +16,16 @@
     "cryptr": "^6.0.3",
     "dotenv": "^16.0.3",
     "express": "^4.17.1",
-    "mongodb": "^3.2.7",
-    "socket.io": "^4.2.0"
+    "mongodb": "^3.7.4",
+    "socket.io": "^4.8.1",
+    "tsc": "^2.0.4",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.15",
+    "@types/express": "^4.17.20",
+    "@types/mongodb": "^4.0.7",
+    "@types/node": "^20.8.8",
+    "nodemon": "^3.0.1"
   }
 }
