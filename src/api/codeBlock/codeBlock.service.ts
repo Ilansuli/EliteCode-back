@@ -17,7 +17,7 @@ export async function query() {
 export async function getById(codeBlockId: string) {
   try {
     const collection = await getCollection("codeBlock");
-    const codeBlock = collection.findOne({ _id: ObjectId(codeBlockId) });
+    const codeBlock = collection.findOne({ _id: new ObjectId(codeBlockId) });
     return codeBlock;
   } catch (err) {
     loggerService.error(`while finding codeBlock ${codeBlockId}`, err);
@@ -28,7 +28,7 @@ export async function getById(codeBlockId: string) {
 export async function remove(codeBlockId: string) {
   try {
     const collection = await getCollection("codeBlock");
-    await collection.deleteOne({ _id: ObjectId(codeBlockId) });
+    await collection.deleteOne({ _id: new ObjectId(codeBlockId) });
     return codeBlockId;
   } catch (err) {
     loggerService.error(`cannot remove codeBlock ${codeBlockId}`, err);
@@ -41,7 +41,7 @@ export async function update(codeBlock: TCodeBlock) {
     const collection = await getCollection("codeBlock");
     const { _id } = codeBlock;
     delete codeBlock._id;
-    await collection.updateOne({ _id: ObjectId(_id) }, { $set: codeBlock });
+    await collection.updateOne({ _id: new ObjectId(_id) }, { $set: codeBlock });
     return codeBlock;
   } catch (err) {
     loggerService.error(`cannot update codeBlock ${codeBlock._id}`, err);

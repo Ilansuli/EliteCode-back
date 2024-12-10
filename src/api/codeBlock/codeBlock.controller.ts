@@ -27,7 +27,6 @@ export async function getCodeBlockById(req: Request, res: Response) {
 export async function updateCodeBlock(req: Request, res: Response) {
   try {
     const codeBlock = req.body;
-    console.log(codeBlock);
     const updatedCodeBlock = await update(codeBlock);
     res.json(updatedCodeBlock);
   } catch (err) {

@@ -2,7 +2,7 @@ import { MongoClient, Db } from "mongodb";
 import config from "../config/index";
 import { loggerService } from "./logger.service";
 
-var dbConn: Db | null = null;
+var dbConn = null;
 
 export async function getCollection(collectionName: string) {
   try {
@@ -20,6 +20,7 @@ async function connect() {
   try {
     if (config.dbURL) {
       loggerService.info(dbConn, "db is firstly connecting");
+      loggerService.info(config.dbURL);
       const client = await MongoClient.connect(config.dbURL);
       const db = client.db(config.dbName);
       loggerService.error("Missing dbURL in the configuration");
