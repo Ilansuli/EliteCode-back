@@ -1,4 +1,4 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient } from "mongodb";
 import config from "../config/index";
 import { loggerService } from "./logger.service";
 
@@ -20,10 +20,7 @@ async function connect() {
   try {
     if (config.dbURL) {
       loggerService.info(dbConn, "db is firstly connecting");
-      const client = await MongoClient.connect(config.dbURL, {
-        tls: true,
-        tlsInsecure: false,
-      });
+      const client = await MongoClient.connect(config.dbURL);
       const db = client.db(config.dbName);
       loggerService.error("Missing dbURL in the configuration");
       dbConn = db;
