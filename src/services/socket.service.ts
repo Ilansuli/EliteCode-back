@@ -61,10 +61,10 @@ export const setupSocketAPI = (http: HttpServer) => {
         roomDetails[roomId].studentsCounts === 0
       ) {
         roomDetails[roomId].mentorSocketId = socket.id;
-        emitToRoom("set-is-mentor", roomId, true);
+        emitToRoom(socket, "set-is-mentor", roomId, true);
         loggerService.info("Mentor entered the room socketId:", socket.id);
       } else {
-        incrementRoomCount(roomId);
+        updateRoomCount("increase", socket, roomId);
         loggerService.info("Student entered the room socketId:", socket.id);
       }
     });
@@ -74,13 +74,13 @@ export const setupSocketAPI = (http: HttpServer) => {
 
       const room = roomDetails[currentRoomId];
 
-      // Handle mentor disconnect
+      // handle mentor disconnect
       if (socket.id === room.mentorSocketId) {
-        disconnectMentor(currentRoomId);
+        disconnectMentor(socket, currentRoomId);
         disconnectAllInRoom(currentRoomId);
         loggerService.info("Mentor disconnected socketId:", socket.id);
       } else if (room.studentsCounts > 0) {
-        decrementRoomCount(currentRoomId);
+        updateRoomCount("decrease", socket, currentRoomId);
         loggerService.info("Student disconnected socketId:", socket.id);
       }
       socket.leave(currentRoomId);
@@ -91,53 +91,69 @@ export const setupSocketAPI = (http: HttpServer) => {
       ({ newCodeContent }: { newCodeContent: string }) => {
         if (!currentRoomId) return;
         roomDetails[currentRoomId].codeContent = newCodeContent;
-        emitToRoom("update-code-content", currentRoomId, newCodeContent);
+        emitToRoom(
+          socket,
+          "update-code-content",
+          currentRoomId,
+          newCodeContent
+        );
         loggerService.info("Code Updated by socketId:", socket.id);
       }
     );
   });
 };
-
-const incrementRoomCount = (roomId: string) => {
-  if (roomDetails[roomId]) {
-    roomDetails[roomId].studentsCounts += 1;
-    emitToRoom("update-room-count", roomId, roomDetails[roomId].studentsCounts);
-  }
-};
-
-const decrementRoomCount = (roomId: string) => {
+const updateRoomCount = (
+  flag: "increase" | "decrease",
+  socket: Socket,
+  roomId: string
+) => {
   const room = roomDetails[roomId];
-  if (room) {
-    room.studentsCounts -= 1;
-    emitToRoom("update-room-count", roomId, room.studentsCounts);
-  } else {
+
+  if (!room) {
     loggerService.warn(`Room with ID ${roomId} not found.`);
+    return;
   }
+
+  if (flag === "increase") {
+    room.studentsCounts += 1;
+  } else if (flag === "decrease") {
+    room.studentsCounts -= 1;
+  }
+
+  emitToRoom(socket, "update-room-count", roomId, room.studentsCounts);
 };
 
-const disconnectMentor = (roomId: string) => {
+const disconnectMentor = (socket: Socket, roomId: string) => {
   const room = roomDetails[roomId];
-  if (room) {
-    room.mentorSocketId = "";
-    room.codeContent = room.initialTemplate;
-    emitToRoom("set-is-mentor", roomId, false);
-  }
+  if (!room) return;
+  room.mentorSocketId = "";
+  room.codeContent = room.initialTemplate;
+  emitToRoom(socket, "set-is-mentor", roomId, false);
 };
 
 const disconnectAllInRoom = (roomId: string) => {
   const roomSockets = gIo?.sockets.adapter.rooms.get(roomId);
-  if (roomSockets) {
-    Array.from(roomSockets).forEach((socketId) => {
-      const socket = gIo?.sockets.sockets.get(socketId);
-      socket?.leave(roomId);
-      socket?.emit("force-leave-room", { roomId });
-    });
-  }
+  if (!roomSockets) return;
+  Array.from(roomSockets).forEach((socketId) => {
+    const socket = gIo?.sockets.sockets.get(socketId);
+    socket?.leave(roomId);
+    socket?.emit("force-leave-room", { roomId });
+  });
 };
 
-const emitToRoom = (event: string, roomId: string, data: any) => {
-  if (gIo) {
+const emitToRoom = (
+  socket: Socket,
+  event: string,
+  roomId: string,
+  data: any,
+  broadcastGlobally: boolean = true
+) => {
+  if (!gIo) return;
+
+  if (broadcastGlobally) {
     gIo.to(roomId).emit(event, data);
+  } else {
+    socket.to(roomId).emit(event, data);
   }
 };
 
