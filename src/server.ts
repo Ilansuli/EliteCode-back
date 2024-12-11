@@ -21,10 +21,11 @@ if (process.env.NODE_ENV === "production") {
     origin: [
       "http://127.0.0.1:5173",
       "http://localhost:5173",
-      "https://elite-code-api.onrender.com",
+      "https://elite-code.onrender.com",
     ],
     credentials: true,
   };
+
   app.use(cors(corsOptions));
 }
 
