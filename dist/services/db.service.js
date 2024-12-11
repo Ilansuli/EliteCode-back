@@ -42,7 +42,6 @@ function connect() {
                     tls: true,
                 });
                 const db = client.db(index_1.default.dbName);
-                logger_service_1.loggerService.error("Missing dbURL in the configuration");
                 dbConn = db;
                 return db;
             }

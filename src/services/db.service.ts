@@ -25,7 +25,6 @@ async function connect() {
         tls: true,
       });
       const db = client.db(config.dbName);
-      loggerService.error("Missing dbURL in the configuration");
       dbConn = db;
       return db;
     }
