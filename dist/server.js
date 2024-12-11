@@ -21,25 +21,19 @@ const codeBlock_routes_1 = require("./api/codeBlock/codeBlock.routes");
 const http_1 = require("http");
 const dotenv_1 = require("dotenv");
 const socket_service_1 = require("./services/socket.service");
-//INIT
+// init
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const http = (0, http_1.createServer)(app);
 (0, dotenv_1.config)();
 (0, socket_service_1.setupSocketAPI)(http);
+const corsOptions = {
+    origin: "https://elite-code.onrender.com",
+    credentials: true,
+};
+app.use((0, cors_1.default)(corsOptions));
 if (process.env.NODE_ENV === "production") {
     app.use(express_1.default.static(path_1.default.resolve(__dirname, "public")));
-}
-else {
-    const corsOptions = {
-        origin: [
-            "http://127.0.0.1:5173",
-            "http://localhost:5173",
-            "https://elite-code-api.onrender.com",
-        ],
-        credentials: true,
-    };
-    app.use((0, cors_1.default)(corsOptions));
 }
 app.use("/api/codeBlock", codeBlock_routes_1.router);
 app.get("/api/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,19 +45,17 @@ app.get("/api/test", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(500).send({ err: "Failed to get test" });
     }
 }));
-//keeping server alive in free hosting
+// keeping server alive in free hosting
 setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios_1.default.get(`https://elite-code-api.onrender.com/api/test`);
-        console.log("Request to / successful:", response.data);
+        console.log("Request to /api/test successful:", response.data);
     }
     catch (error) {
-        console.error("Error making request to /:", error.message);
+        console.error("Error making request to /api/test:", error.message);
     }
 }), 13 * 60 * 1000);
-// Make every server-side-route to match the index.html
-// so when requesting http://localhost:3030/index.html/station/123 it will still respond with
-// our SPA (single page app) (the index.html file) and allow vue/react-router to take it from there
+// catch-all for spa routes
 app.get("/**", (req, res) => {
     res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
 });
