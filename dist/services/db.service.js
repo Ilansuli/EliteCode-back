@@ -37,7 +37,10 @@ function connect() {
         try {
             if (index_1.default.dbURL) {
                 logger_service_1.loggerService.info(dbConn, "db is firstly connecting");
-                const client = yield mongodb_1.MongoClient.connect(index_1.default.dbURL);
+                const client = yield mongodb_1.MongoClient.connect(index_1.default.dbURL, {
+                    ssl: true,
+                    tls: true,
+                });
                 const db = client.db(index_1.default.dbName);
                 logger_service_1.loggerService.error("Missing dbURL in the configuration");
                 dbConn = db;
