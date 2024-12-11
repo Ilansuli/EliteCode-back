@@ -61,13 +61,16 @@ export const setupSocketAPI = (http: HttpServer) => {
       ) {
         roomDetails[roomId].mentorSocketId = socket.id;
         emitToRoom("set-is-mentor", roomId, true);
+        loggerService.info("Mentor entered the room socketId:", socket.id);
       } else {
         incrementRoomCount(roomId);
+        loggerService.info("Student entered the room socketId:", socket.id);
       }
     });
 
     socket.on("disconnect", () => {
       const roomId = findRoomBySocket(socket.id);
+
       if (!roomId) return;
 
       const room = roomDetails[roomId];
@@ -76,10 +79,11 @@ export const setupSocketAPI = (http: HttpServer) => {
       if (socket.id === room.mentorSocketId) {
         disconnectMentor(roomId);
         disconnectAllInRoom(roomId);
+        loggerService.info("Mentor disconnected socketId:", socket.id);
       } else if (room.studentsCounts > 0) {
         decrementRoomCount(roomId);
+        loggerService.info("Student disconnected socketId:", socket.id);
       }
-
       socket.leave(roomId);
     });
 
@@ -88,9 +92,9 @@ export const setupSocketAPI = (http: HttpServer) => {
       ({ newCodeContent }: { newCodeContent: string }) => {
         const roomId = findRoomBySocket(socket.id);
         if (!roomId) return;
-
         roomDetails[roomId].codeContent = newCodeContent;
         emitToRoom("update-code-content", roomId, newCodeContent);
+        loggerService.info("Code Updated by socketId:", socket.id);
       }
     );
   });

@@ -18,8 +18,8 @@ setupSocketAPI(http);
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
-      ? "https://elite-code.onrender.com" // Production frontend origin
-      : ["http://127.0.0.1:5173", "http://localhost:5173"], // Development origins
+      ? "https://elite-code.onrender.com"
+      : ["http://127.0.0.1:5173", "http://localhost:5173"],
   credentials: true,
 };
 

@@ -52,9 +52,11 @@ const setupSocketAPI = (http) => {
                 roomDetails[roomId].studentsCounts === 0) {
                 roomDetails[roomId].mentorSocketId = socket.id;
                 emitToRoom("set-is-mentor", roomId, true);
+                logger_service_1.loggerService.info("Mentor entered the room socketId:", socket.id);
             }
             else {
                 incrementRoomCount(roomId);
+                logger_service_1.loggerService.info("Student entered the room socketId:", socket.id);
             }
         }));
         socket.on("disconnect", () => {
@@ -66,9 +68,11 @@ const setupSocketAPI = (http) => {
             if (socket.id === room.mentorSocketId) {
                 disconnectMentor(roomId);
                 disconnectAllInRoom(roomId);
+                logger_service_1.loggerService.info("Mentor disconnected socketId:", socket.id);
             }
             else if (room.studentsCounts > 0) {
                 decrementRoomCount(roomId);
+                logger_service_1.loggerService.info("Student disconnected socketId:", socket.id);
             }
             socket.leave(roomId);
         });
@@ -78,6 +82,7 @@ const setupSocketAPI = (http) => {
                 return;
             roomDetails[roomId].codeContent = newCodeContent;
             emitToRoom("update-code-content", roomId, newCodeContent);
+            logger_service_1.loggerService.info("Code Updated by socketId:", socket.id);
         });
     });
 };
