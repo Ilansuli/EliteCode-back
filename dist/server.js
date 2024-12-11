@@ -50,7 +50,7 @@ app.get("/api/test", (req, res) => __awaiter(void 0, void 0, void 0, function* (
 //keeping server alive in free hosting
 setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = yield axios_1.default.get(`https://o-pea-app-cd5a.onrender.com/api/test`);
+        const response = yield axios_1.default.get(`https://elitecode-api.onrender.com/api/test`);
         console.log("Request to / successful:", response.data);
     }
     catch (error) {
