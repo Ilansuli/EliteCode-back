@@ -39,13 +39,20 @@ app.get("/api/test", async (req, res) => {
 setInterval(async () => {
   try {
     const response = await axios.get(
-      `https://elitecode-api.onrender.com/api/test`
+      `https://elite-code.onrender.com/api/test`
     );
     console.log("Request to / successful:", response.data);
   } catch (error) {
     console.error("Error making request to /:", error.message);
   }
 }, 13 * 60 * 1000);
+
+// Make every server-side-route to match the index.html
+// so when requesting http://localhost:3030/index.html/station/123 it will still respond with
+// our SPA (single page app) (the index.html file) and allow vue/react-router to take it from there
+app.get("/**", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const port = process.env.PORT || 3030;
 http.listen(port, () => {

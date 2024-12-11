@@ -50,13 +50,19 @@ app.get("/api/test", (req, res) => __awaiter(void 0, void 0, void 0, function* (
 //keeping server alive in free hosting
 setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = yield axios_1.default.get(`https://elitecode-api.onrender.com/api/test`);
+        const response = yield axios_1.default.get(`https://elite-code.onrender.com/api/test`);
         console.log("Request to / successful:", response.data);
     }
     catch (error) {
         console.error("Error making request to /:", error.message);
     }
 }), 13 * 60 * 1000);
+// Make every server-side-route to match the index.html
+// so when requesting http://localhost:3030/index.html/station/123 it will still respond with
+// our SPA (single page app) (the index.html file) and allow vue/react-router to take it from there
+app.get("/**", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
+});
 const port = process.env.PORT || 3030;
 http.listen(port, () => {
     logger_service_1.loggerService.info("Server is running on http://localhost:" + port);
