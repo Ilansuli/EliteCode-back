@@ -7,26 +7,27 @@ import { router as codeBlockRoutes } from "./api/codeBlock/codeBlock.routes";
 import { createServer } from "http";
 import { config as dotenvConfig } from "dotenv";
 import { setupSocketAPI } from "./services/socket.service";
-//INIT
+
+// init
 const app = express();
 app.use(express.json());
 const http = createServer(app);
 dotenvConfig();
 setupSocketAPI(http);
 
+const corsOptions = {
+  origin: [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://elite-code.onrender.com",
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve(__dirname, "public")));
-} else {
-  const corsOptions = {
-    origin: [
-      "http://127.0.0.1:5173",
-      "http://localhost:5173",
-      "https://elite-code.onrender.com",
-    ],
-    credentials: true,
-  };
-
-  app.use(cors(corsOptions));
 }
 
 app.use("/api/codeBlock", codeBlockRoutes);
@@ -40,21 +41,19 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-//keeping server alive in free hosting
+// keeping server alive in free hosting
 setInterval(async () => {
   try {
     const response = await axios.get(
       `https://elite-code-api.onrender.com/api/test`
     );
-    console.log("Request to / successful:", response.data);
+    console.log("Request to /api/test successful:", response.data);
   } catch (error) {
-    console.error("Error making request to /:", error.message);
+    console.error("Error making request to /api/test:", error.message);
   }
 }, 13 * 60 * 1000);
 
-// Make every server-side-route to match the index.html
-// so when requesting http://localhost:3030/index.html/station/123 it will still respond with
-// our SPA (single page app) (the index.html file) and allow vue/react-router to take it from there
+// catch-all for spa routes
 app.get("/**", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
