@@ -18,6 +18,7 @@ const logger_service_1 = require("./logger.service");
 const axios_1 = __importDefault(require("axios"));
 let gIo = null;
 const roomDetails = {};
+let currentRoomId;
 const setupSocketAPI = (http) => {
     gIo = new socket_io_1.Server(http, {
         cors: {
@@ -33,6 +34,7 @@ const setupSocketAPI = (http) => {
             if (!roomDetails[roomId]) {
                 try {
                     const { data } = yield axios_1.default.get(`https://elite-code-api.onrender.com/api/codeBlock/${roomId}`);
+                    currentRoomId = roomId;
                     roomDetails[roomId] = {
                         mentorSocketId: "",
                         studentsCounts: 0,
@@ -60,28 +62,26 @@ const setupSocketAPI = (http) => {
             }
         }));
         socket.on("disconnect", () => {
-            const roomId = findRoomBySocket(socket.id);
-            if (!roomId)
+            if (!currentRoomId)
                 return;
-            const room = roomDetails[roomId];
+            const room = roomDetails[currentRoomId];
             // Handle mentor disconnect
             if (socket.id === room.mentorSocketId) {
-                disconnectMentor(roomId);
-                disconnectAllInRoom(roomId);
+                disconnectMentor(currentRoomId);
+                disconnectAllInRoom(currentRoomId);
                 logger_service_1.loggerService.info("Mentor disconnected socketId:", socket.id);
             }
             else if (room.studentsCounts > 0) {
-                decrementRoomCount(roomId);
+                decrementRoomCount(currentRoomId);
                 logger_service_1.loggerService.info("Student disconnected socketId:", socket.id);
             }
-            socket.leave(roomId);
+            socket.leave(currentRoomId);
         });
         socket.on("update-code-content", ({ newCodeContent }) => {
-            const roomId = findRoomBySocket(socket.id);
-            if (!roomId)
+            if (!currentRoomId)
                 return;
-            roomDetails[roomId].codeContent = newCodeContent;
-            emitToRoom("update-code-content", roomId, newCodeContent);
+            roomDetails[currentRoomId].codeContent = newCodeContent;
+            emitToRoom("update-code-content", currentRoomId, newCodeContent);
             logger_service_1.loggerService.info("Code Updated by socketId:", socket.id);
         });
     });
@@ -130,13 +130,4 @@ const emitToSocket = (event, socketId, data) => {
     if (gIo) {
         gIo.to(socketId).emit(event, data);
     }
-};
-const findRoomBySocket = (socketId) => {
-    for (const roomId in roomDetails) {
-        const room = gIo === null || gIo === void 0 ? void 0 : gIo.sockets.adapter.rooms.get(roomId);
-        if (room && room.has(socketId)) {
-            return roomId;
-        }
-    }
-    return null;
 };
