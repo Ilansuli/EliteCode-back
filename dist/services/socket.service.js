@@ -32,7 +32,7 @@ const setupSocketAPI = (http) => {
             // Initialize room state if it is the first user joining the room
             if (!roomDetails[roomId]) {
                 try {
-                    const { data } = yield axios_1.default.get(`https://elite-code.onrender.com/api/codeBlock/${roomId}`);
+                    const { data } = yield axios_1.default.get(`https://elite-code-api.onrender.com/api/codeBlock/${roomId}`);
                     roomDetails[roomId] = {
                         mentorSocketId: "",
                         studentsCounts: 0,

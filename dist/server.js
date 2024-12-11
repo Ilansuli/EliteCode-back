@@ -32,7 +32,11 @@ if (process.env.NODE_ENV === "production") {
 }
 else {
     const corsOptions = {
-        origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
+        origin: [
+            "http://127.0.0.1:5173",
+            "http://localhost:5173",
+            "https://elite-code-api.onrender.com",
+        ],
         credentials: true,
     };
     app.use((0, cors_1.default)(corsOptions));
@@ -50,7 +54,7 @@ app.get("/api/test", (req, res) => __awaiter(void 0, void 0, void 0, function* (
 //keeping server alive in free hosting
 setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = yield axios_1.default.get(`https://elite-code.onrender.com/api/test`);
+        const response = yield axios_1.default.get(`https://elite-code-api.onrender.com/api/test`);
         console.log("Request to / successful:", response.data);
     }
     catch (error) {

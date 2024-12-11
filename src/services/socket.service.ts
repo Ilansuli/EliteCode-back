@@ -31,7 +31,7 @@ export const setupSocketAPI = (http: HttpServer) => {
       if (!roomDetails[roomId]) {
         try {
           const { data } = await axios.get(
-            `https://elite-code.onrender.com/api/codeBlock/${roomId}`
+            `https://elite-code-api.onrender.com/api/codeBlock/${roomId}`
           );
           roomDetails[roomId] = {
             mentorSocketId: "",
