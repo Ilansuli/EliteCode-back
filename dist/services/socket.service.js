@@ -81,7 +81,7 @@ const setupSocketAPI = (http) => {
             if (!currentRoomId)
                 return;
             roomDetails[currentRoomId].codeContent = newCodeContent;
-            emitToRoom(socket, "update-code-content", currentRoomId, newCodeContent);
+            emitToRoom(socket, "update-code-content", currentRoomId, newCodeContent, false);
             logger_service_1.loggerService.info("Code Updated by socketId:", socket.id);
         });
     });

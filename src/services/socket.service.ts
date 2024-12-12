@@ -95,7 +95,8 @@ export const setupSocketAPI = (http: HttpServer) => {
           socket,
           "update-code-content",
           currentRoomId,
-          newCodeContent
+          newCodeContent,
+          false
         );
         loggerService.info("Code Updated by socketId:", socket.id);
       }
