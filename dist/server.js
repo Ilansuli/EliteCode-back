@@ -28,10 +28,9 @@ const http = (0, http_1.createServer)(app);
 (0, dotenv_1.config)();
 (0, socket_service_1.setupSocketAPI)(http);
 const corsOptions = {
-    origin: "http://localhost:5173",
-    // process.env.NODE_ENV === "production"
-    //   ? "https://elite-code.onrender.com"
-    //   : ["http://127.0.0.1:5173", "http://localhost:5173"],
+    origin: process.env.NODE_ENV === "production"
+        ? "https://elite-code.onrender.com"
+        : ["http://127.0.0.1:5173", "http://localhost:5173"],
     credentials: true,
 };
 app.use((0, cors_1.default)(corsOptions));

@@ -30,7 +30,7 @@ const setupSocketAPI = (http) => {
             if (!roomId)
                 return;
             socket.join(roomId);
-            // Initialize room state if it is the first user joining the room
+            // initialize room state if it is the first user joining the room
             if (!roomDetails[roomId]) {
                 try {
                     const { data } = yield axios_1.default.get(`https://elite-code-api.onrender.com/api/codeBlock/${roomId}`);
@@ -47,9 +47,9 @@ const setupSocketAPI = (http) => {
                     return;
                 }
             }
-            // Send code content to the newly joined user
+            // send code content to the newly joined user
             emitToSocket("update-code-content", socket.id, roomDetails[roomId].codeContent);
-            // Handle mentor and student logic
+            // handle mentor and student logic
             if (!roomDetails[roomId].mentorSocketId &&
                 roomDetails[roomId].studentsCounts === 0) {
                 roomDetails[roomId].mentorSocketId = socket.id;
