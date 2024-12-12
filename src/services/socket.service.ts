@@ -27,7 +27,7 @@ export const setupSocketAPI = (http: HttpServer) => {
 
       socket.join(roomId);
 
-      // Initialize room state if it is the first user joining the room
+      // initialize room state if it is the first user joining the room
       if (!roomDetails[roomId]) {
         try {
           const { data } = await axios.get(
@@ -48,14 +48,14 @@ export const setupSocketAPI = (http: HttpServer) => {
         }
       }
 
-      // Send code content to the newly joined user
+      // send code content to the newly joined user
       emitToSocket(
         "update-code-content",
         socket.id,
         roomDetails[roomId].codeContent
       );
 
-      // Handle mentor and student logic
+      // handle mentor and student logic
       if (
         !roomDetails[roomId].mentorSocketId &&
         roomDetails[roomId].studentsCounts === 0
